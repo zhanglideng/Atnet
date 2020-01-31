@@ -36,11 +36,11 @@ class AtDataSet(Dataset):
             (大气光)
             624, 464
         """
-        A_image = np.ones((624, 464, 3), dtype=np.float32)
+        A_image = np.ones((608, 448, 3), dtype=np.float32)
         haze_image_name = self.haze_data_list[idx]
         haze_image = cv2.imread(self.haze_path + haze_image_name)
         gt_image = cv2.imread(self.gt_path + haze_image_name[:-18] + '.PNG')
-        d_image = np.load(self.d_path + haze_image_name[:-30] + '.npy')
+        d_image = np.load(self.d_path + haze_image_name[:-18] + '.npy')
         b = float(haze_image_name[-8:-4])
         A = float(haze_image_name[-15:-11])
         d_image = np.expand_dims(d_image, axis=2)

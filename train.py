@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+import sys
+
+sys.path.append('/home/aistudio/external-libraries')
 
 import torch
 from torchvision import transforms
@@ -25,10 +28,10 @@ itr_to_lr = 10000 // BATCH_SIZE  # 训练10000次后损失下降50%
 itr_to_excel = 64 // BATCH_SIZE  # 训练64次后保存相关数据到excel
 loss_num = 5  # 包括参加训练和不参加训练的loss
 weight = [1, 1, 1, 1, 1]
-train_haze_path = '/home/aistudio/data/data20070/nyu/train/'  # 去雾训练集的路径
-val_haze_path = '/home/aistudio/data/data20070/nyu/val/'  # 去雾验证集的路径
-gt_path = '/home/aistudio/data/data20070/nyu/gth/'
-d_path = '/home/aistudio/data/data20070/nyu/depth/'
+train_haze_path = '/home/aistudio/data/data19783/nyu/train/'  # 去雾训练集的路径
+val_haze_path = '/home/aistudio/data/data19783/nyu/val/'  # 去雾验证集的路径
+gt_path = '/home/aistudio/data/data19783/nyu/gth/'
+d_path = '/home/aistudio/data/data19783/nyu/depth/'
 save_path = './checkpoints/best_cnn_model.pt'  # 保存模型的路径
 excel_save = './result.xls'  # 保存excel的路径
 
@@ -51,12 +54,12 @@ print(net)
 transform = transforms.Compose([transforms.ToTensor()])
 # 读取训练集数据
 train_path_list = [train_haze_path, gt_path, d_path]
-train_data = EdDataSet(transform, train_path_list)
+train_data = AtDataSet(transform, train_path_list)
 train_data_loader = DataLoader(train_data, batch_size=BATCH_SIZE, shuffle=True, num_workers=0)
 
 # 读取验证集数据
 val_path_list = [val_haze_path, gt_path, d_path]
-val_data = EdDataSet(transform, val_path_list)
+val_data = AtDataSet(transform, val_path_list)
 val_data_loader = DataLoader(val_data, batch_size=BATCH_SIZE, shuffle=True, num_workers=0)
 
 # 定义优化器
@@ -78,6 +81,12 @@ for epoch in range(EPOCH):
         index += 1
         itr += 1
         J, A, t = net(haze_image)
+        print(J.shape)
+        print(gt_image.shape)
+        print(A.shape)
+        print(A_image.shape)
+        print(t.shape)
+        print(t_image.shape)
         loss_image = [gt_image, A_image, t_image, J, A, t]
         loss, temp_loss = loss_function(loss_image, weight)
         loss_excel = [loss_excel[i] + temp_loss[i].item() for i in range(len(loss_excel))]

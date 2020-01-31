@@ -278,9 +278,9 @@ class At(nn.Module):
         A = self.decoder_A(x, x1, x2, x4)
         t = self.decoder_t(x, x1, x2, x4, activation='sig')
 
-        t = torch.abs((t)) + (10 ** -10)
-        t = t.repeat(1, 3, 1, 1)
+        t1 = torch.abs((t)) + (10 ** -10)
+        t1 = t1.repeat(1, 3, 1, 1)
 
-        J = (x - A * (1 - t)) / t
+        J = (x - A * (1 - t1)) / t1
 
         return J, A, t

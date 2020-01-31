@@ -19,10 +19,10 @@ def create_window(window_size, sigma, channel):
 
 
 class MS_SSIM(torch.nn.Module):
-    def __init__(self, size_average=True, max_val=255):
+    def __init__(self, size_average=True, max_val=255, channel=3):
         super(MS_SSIM, self).__init__()
         self.size_average = size_average
-        self.channel = 3
+        self.channel = channel
         self.max_val = max_val
 
     def _ssim(self, img1, img2, size_average=True):

@@ -9,8 +9,8 @@ def l2_loss(input_image, output_image):
     return l2_loss_fn(input_image, output_image) * 100
 
 
-def ssim_loss(input_image, output_image):
-    losser = MS_SSIM(max_val=1)
+def ssim_loss(input_image, output_image, channel=3):
+    losser = MS_SSIM(max_val=1, channel=channel)
     # losser = MS_SSIM(data_range=1.).cuda()
     return (1 - losser(input_image, output_image)) * 100
 
@@ -47,8 +47,8 @@ def loss_function(image, weight):
     loss_train = [l2_loss(gt_image, J),
                   ssim_loss(gt_image, J),
                   l2_loss(A_image, A),
-                  ssim_loss(t_image, t),
-                  l2_loss(t_image, t)]
+                  l2_loss(t_image, t),
+                  ssim_loss(t_image, t, channel=1)]
     loss_sum = 0
     for i in range(len(loss_train)):
         loss_sum = loss_sum + loss_train[i] * weight[i]
