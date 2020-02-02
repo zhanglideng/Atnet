@@ -17,7 +17,7 @@ import xlwt
 from utils.ms_ssim import *
 import os
 
-LR = 0.004  # 学习率
+LR = 0.0004  # 学习率
 EPOCH = 100  # 轮次
 BATCH_SIZE = 4  # 批大小
 excel_train_line = 1  # train_excel写入的行的下标
@@ -28,10 +28,10 @@ itr_to_lr = 10000 // BATCH_SIZE  # 训练10000次后损失下降50%
 itr_to_excel = 64 // BATCH_SIZE  # 训练64次后保存相关数据到excel
 loss_num = 5  # 包括参加训练和不参加训练的loss
 weight = [1, 1, 1, 1, 1]
-train_haze_path = '/home/aistudio/data/data19783/nyu/train/'  # 去雾训练集的路径
-val_haze_path = '/home/aistudio/data/data19783/nyu/val/'  # 去雾验证集的路径
-gt_path = '/home/aistudio/data/data19783/nyu/gth/'
-d_path = '/home/aistudio/data/data19783/nyu/depth/'
+train_haze_path = '/home/aistudio/work/nyu/train/'  # 去雾训练集的路径
+val_haze_path = '/home/aistudio/work/nyu/val/'  # 去雾验证集的路径
+gt_path = '/home/aistudio/work/nyu/gth/'
+d_path = '/home/aistudio/work/nyu/depth/'
 save_path = './checkpoints/best_cnn_model.pt'  # 保存模型的路径
 excel_save = './result.xls'  # 保存excel的路径
 
@@ -46,7 +46,10 @@ def adjust_learning_rate(op, i):
 # 初始化excel
 f, sheet_train, sheet_val = init_excel()
 # 加载模型
-net = At()
+if os.path.exists(save_path):
+    net = torch.load(save_path)
+else:
+    net = At()
 net = net.cuda()
 print(net)
 
@@ -81,12 +84,6 @@ for epoch in range(EPOCH):
         index += 1
         itr += 1
         J, A, t = net(haze_image)
-        print(J.shape)
-        print(gt_image.shape)
-        print(A.shape)
-        print(A_image.shape)
-        print(t.shape)
-        print(t_image.shape)
         loss_image = [gt_image, A_image, t_image, J, A, t]
         loss, temp_loss = loss_function(loss_image, weight)
         loss_excel = [loss_excel[i] + temp_loss[i].item() for i in range(len(loss_excel))]
@@ -118,8 +115,8 @@ for epoch in range(EPOCH):
     with torch.no_grad():
         for haze_image, gt_image, A_image, t_image in val_data_loader:
             J, A, t = net(haze_image)
-            loss, temp_loss = loss_function(
-                [gt_image, output_image, gt_scene_feature, dehaze_image, hazy_scene_feature], weight)
+            loss_image = [gt_image, A_image, t_image, J, A, t]
+            loss, temp_loss = loss_function(loss_image, weight)
             loss_excel = [loss_excel[i] + temp_loss[i].item() for i in range(len(loss_excel))]
     train_epo_loss = train_epo_loss / len(train_data_loader)
     val_epoch_loss = sum(loss_excel)

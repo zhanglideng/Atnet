@@ -284,3 +284,13 @@ class At(nn.Module):
         J = (x - A * (1 - t1)) / t1
 
         return J, A, t
+
+
+'''
+/home/aistudio/external-libraries/torch/nn/functional.py:2481: 
+UserWarning: nn.functional.upsample_nearest is deprecated. Use nn.functional.interpolate instead.
+  warnings.warn("nn.functional.upsample_nearest is deprecated. Use nn.functional.interpolate instead.")
+/home/aistudio/external-libraries/torch/nn/functional.py:2351: 
+UserWarning: nn.functional.upsample is deprecated. Use nn.functional.interpolate instead.
+  warnings.warn("nn.functional.upsample is deprecated. Use nn.functional.interpolate instead.")
+'''

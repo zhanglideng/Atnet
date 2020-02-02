@@ -45,14 +45,13 @@ class AtDataSet(Dataset):
         A = float(haze_image_name[-15:-11])
         d_image = np.expand_dims(d_image, axis=2)
         d_image = d_image.astype(np.float32)
-        t_image = np.exp(-1 * b * d_image) * 255
-        A_image = A_image * A * 255
+        t_image = np.exp(-1 * b * d_image)
+        A_image = A_image * A
         if self.transform1:
             haze_image = self.transform1(haze_image)
             gt_image = self.transform1(gt_image)
             A_image = self.transform1(A_image)
             t_image = self.transform1(t_image)
         return haze_image.cuda(), gt_image.cuda(), A_image.cuda(), t_image.cuda()
-
 
 # if __name__ == '__main__':
